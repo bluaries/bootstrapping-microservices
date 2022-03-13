@@ -5,8 +5,13 @@ const fs = require("fs");
 
 const app = express();
 
-// listen on port 3000
-const port = 3000;
+// Throws an error when the required environment variable isn’t supplied.
+if (!process.env.PORT) {
+    throw new Error("Please specify the port number for the HTTP server with the environment variable PORT.");
+}
+
+// command: export PORT=3000
+const PORT = process.env.PORT;
 
 // Defines the HTTP route for streaming video.
 app.get("/video", (req, res) => {
@@ -34,6 +39,6 @@ app.get("/video", (req, res) => {
 });
 
 // Initiates the HTTP server
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}!`);
+app.listen(PORT, () => {
+    console.log(`Microservice listening on port ${PORT}, point your browser at http://localhost:${PORT}/video`);
 });
