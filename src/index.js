@@ -3,22 +3,17 @@ const express = require('express');
 // Loads the (built-in) fs library so we can use the Node.js filesystem API.
 const fs = require("fs");
 
+const path = require("path");
+
 const app = express();
-
-// Throws an error when the required environment variable isn’t supplied.
-if (!process.env.PORT) {
-    throw new Error("Please specify the port number for the HTTP server with the environment variable PORT.");
-}
-
-// command: export PORT=3000
-const PORT = process.env.PORT;
+const port = 3000;
 
 // Defines the HTTP route for streaming video.
 app.get("/video", (req, res) => {
-    const path = "../videos/SampleVideo_1280x720_1mb.mp4";
+    const videoPath = path.join("./videos", "SampleVideo_1280x720_1mb.mp4");
 
     // Retrieves the video file size.
-    fs.stat(path, (err, stats) => {
+    fs.stat(videoPath, (err, stats) => {
 
         // Handles errors
         if (err) {
@@ -34,11 +29,11 @@ app.get("/video", (req, res) => {
             });
 
         // Streams the video to the web browser.
-        fs.createReadStream(path).pipe(res);
+        fs.createReadStream(videoPath).pipe(res);
     });
 });
 
 // Initiates the HTTP server
-app.listen(PORT, () => {
-    console.log(`Microservice listening on port ${PORT}, point your browser at http://localhost:${PORT}/video`);
+app.listen(port, () => {
+    console.log(`Microservice listening on port ${port}, point your browser at http://localhost:${port}/video`);
 });
