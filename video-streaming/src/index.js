@@ -17,19 +17,29 @@ function connectRabbit() {
         .then(connection => {
             console.log("Connected to RabbitMQ.");
 
-            return connection.createChannel();
+            return connection.createChannel()
+            .then(messageChannel => {
+                return messageChannel.assertExchange("viewed", "fanout")
+                .then(() => {
+                    return messageChannel;
+                });
+            });
         });
 }
 
 
 // Send the "viewed" to the history microservice.
 function sendViewedMessage(messageChannel, videoPath) {
-    console.log(`Publishing message on "viewed" queue.`);
-
     const msg = { videoPath: videoPath };
     const jsonMsg = JSON.stringify(msg);
-    // Publish message to the "viewed" queue
-    messageChannel.publish("", "viewed", Buffer.from(jsonMsg));
+    messageChannel.publish("viewed", "", Buffer.from(jsonMsg)); {
+        console.log(`Publishing message on "viewed" queue.`);
+
+        const msg = { videoPath: videoPath };
+        const jsonMsg = JSON.stringify(msg);
+        // Publish message to the "viewed" queue
+        messageChannel.publish("", "viewed", Buffer.from(jsonMsg));
+    }
 }
 
 function setupHandlers(app, messageChannel) {
@@ -68,10 +78,10 @@ function startHttpServer(messageChannel) {
 }
 
 function main() {
-    return connectRabbit()                          
-        .then(messageChannel => {                   
-            return startHttpServer(messageChannel); 
-        });
+    return connectRabbit()
+    .then(messageChannel => {
+        return startHttpServer(messageChannel);
+    });
 }
 
 main()
