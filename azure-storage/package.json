@@ -1,5 +1,5 @@
 {
-  "name": "src",
+  "name": "azure",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,9 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.4"
+    "azure-storage": "^2.10.7",
+    "express": "^4.17.3"
   }
 }
