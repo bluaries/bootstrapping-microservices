@@ -11,9 +11,11 @@ services:
       dockerfile: Dockerfile
     container_name: video-streaming
     ports:
-     - "4001:80"
+     - "4000:80"
     environment:
       - PORT=80
+      - DBHOST=mongodb://db:27017
+      - DBNAME=video-streaming
       - VIDEO_STORAGE_HOST=video-storage
       - VIDEO_STORAGE_PORT=80
     restart: "no"
@@ -25,9 +27,15 @@ services:
       dockerfile: Dockerfile
     container_name: video-storage
     ports:
-     - "4000:80"
+     - "4001:80"
     environment:
       - PORT=80
       - STORAGE_ACCOUNT_NAME=
       - STORAGE_ACCESS_KEY=
     restart: "no"
+  db:
+    image: mongo:4.2.8
+    container_name: db
+    ports:
+     - "4002:27017"
+    restart: always
