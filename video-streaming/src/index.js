@@ -1,38 +1,38 @@
 const express = require("express");
 const fs = require("fs");
-const http = require("http");
+const amqp = require('amqplib');
 
-function sendViewedMessage(videoPath) {
-    const postOptions = { 
-        method: "POST", 
-        headers: {
-            "Content-Type": "application/json", 
-        },
-    };
-
-    const requestBody = { 
-        videoPath: videoPath 
-    };
-
-    const req = http.request( 
-        "http://history/viewed",
-        postOptions
-    );
-
-    req.on("close", () => {
-        console.log("Sent 'viewed' message to history microservice.");
-    });
-
-    req.on("error", (err) => {
-        console.error("Failed to send 'viewed' message!");
-        console.error(err && err.stack || err);
-    });
-
-    req.write(JSON.stringify(requestBody)); 
-    req.end(); 
+if (!process.env.RABBIT) {
+    throw new Error("Please specify the name of the RabbitMQ host using environment variable RABBIT");
 }
 
-function setupHandlers(app) {
+const RABBIT = process.env.RABBIT;
+
+// Connect to the RabbitMQ server.
+function connectRabbit() {
+
+    console.log(`Connecting to RabbitMQ server at ${RABBIT}.`);
+
+    return amqp.connect(RABBIT) 
+        .then(connection => {
+            console.log("Connected to RabbitMQ.");
+
+            return connection.createChannel();
+        });
+}
+
+
+// Send the "viewed" to the history microservice.
+function sendViewedMessage(messageChannel, videoPath) {
+    console.log(`Publishing message on "viewed" queue.`);
+
+    const msg = { videoPath: videoPath };
+    const jsonMsg = JSON.stringify(msg);
+    // Publish message to the "viewed" queue
+    messageChannel.publish("", "viewed", Buffer.from(jsonMsg));
+}
+
+function setupHandlers(app, messageChannel) {
     app.get("/video", (req, res) => { 
 
         const videoPath = "./videos/SampleVideo_1280x720_1mb.mp4";
@@ -50,25 +50,28 @@ function setupHandlers(app) {
     
             fs.createReadStream(videoPath).pipe(res);
 
-            sendViewedMessage(videoPath); 
+            sendViewedMessage(messageChannel, videoPath); 
         });
     });
 }
 
-function startHttpServer() {
+function startHttpServer(messageChannel) {
     return new Promise(resolve => { 
         const app = express();
-        setupHandlers(app);
-        
+        setupHandlers(app, messageChannel);
+
         const port = process.env.PORT && parseInt(process.env.PORT) || 3000;
         app.listen(port, () => {
-            resolve();
+            resolve(); 
         });
     });
 }
 
 function main() {
-    return startHttpServer();
+    return connectRabbit()                          
+        .then(messageChannel => {                   
+            return startHttpServer(messageChannel); 
+        });
 }
 
 main()
