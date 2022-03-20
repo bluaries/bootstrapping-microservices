@@ -1,39 +1,30 @@
-const express = require('express');
-
-// Loads the (built-in) fs library so we can use the Node.js filesystem API.
-const fs = require("fs");
-
-const path = require("path");
+const express = require("express");
+const http = require("http");
 
 const app = express();
-const port = 3000;
 
-// Defines the HTTP route for streaming video.
+const PORT = process.env.PORT;
+
+// Configures the connection to the video-storage microservice
+const VIDEO_STORAGE_HOST = process.env.VIDEO_STORAGE_HOST;
+const VIDEO_STORAGE_PORT = parseInt(process.env.VIDEO_STORAGE_PORT);
+
+// GET request to the video route to the video-storage microservice
 app.get("/video", (req, res) => {
-    const videoPath = path.join("./videos", "SampleVideo_1280x720_1mb.mp4");
-
-    // Retrieves the video file size.
-    fs.stat(videoPath, (err, stats) => {
-
-        // Handles errors
-        if (err) {
-            console.error("An error occurred");
-            res.sendStatus(500);
-            return;
-            }
-            
-        // Sends a response header to the web browser,
-        res.writeHead(200, {
-            "Content-Length": stats.size,
-            "Content-Type": "video/mp4",
-            });
-
-        // Streams the video to the web browser.
-        fs.createReadStream(videoPath).pipe(res);
+    const forwardRequest = http.request({
+        host: VIDEO_STORAGE_HOST,
+        port: VIDEO_STORAGE_PORT,
+        path:'/video?path=SampleVideo_1280x720_1mb.mp4',
+        method: 'GET',
+        headers: req.headers
+    },
+    forwardResponse => {
+        res.writeHeader(forwardResponse.statusCode, forwardResponse.headers);
+        forwardResponse.pipe(res);
     });
+    req.pipe(forwardRequest);
 });
 
-// Initiates the HTTP server
-app.listen(port, () => {
-    console.log(`Microservice listening on port ${port}, point your browser at http://localhost:${port}/video`);
+app.listen(PORT, () => {
+    console.log(`Microservice online`);
 });
