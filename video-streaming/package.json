@@ -12,8 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.8.0",
     "express": "^4.17.1",
-    "mongodb": "^4.4.1"
+    "mongodb": "^4.4.1",
+    "wait-port": "^0.2.9"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
