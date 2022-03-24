@@ -1,3 +1,9 @@
 node_modules
 build
 *.bak 
+*.tfstate
+.terraform.tfstate.lock.info
+.terraform.lock.hcl
+*.terraform
+*.backup
+cred.txt
