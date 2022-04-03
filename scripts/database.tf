@@ -25,7 +25,7 @@ resource "kubernetes_deployment" "database" {
 
       spec {
         container {
-          image = "mongo:4.2.8"
+          image = "mongo:3.4"
           name  = "database"
 
           port {
@@ -39,7 +39,7 @@ resource "kubernetes_deployment" "database" {
 
 resource "kubernetes_service" "database" {
     metadata {
-        name = "database"
+        name = "db"
     }
 
     spec {
@@ -48,9 +48,7 @@ resource "kubernetes_service" "database" {
         }   
 
         port {
-            port         = 27017
+            port        = 27017
         }
-
-        type             = "LoadBalancer"
     }
 }
