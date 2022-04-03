@@ -1,5 +1,5 @@
 {
-  "name": "video-streaming",
+  "name": "example-1",
   "version": "1.0.0",
   "description": "",
   "main": "./src/index.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
-    "hbs": "^4.1.0"
+    "azure-storage": "^2.10.3",
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
