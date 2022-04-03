@@ -7,3 +7,4 @@ build
 *.terraform
 *.backup
 cred.txt
+.DS_Store
