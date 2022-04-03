@@ -29,10 +29,10 @@ function setupHandlers(microservice) {
     const videosCollection = microservice.db.collection("videos");
 
     microservice.app.get("/videos", (req, res) => {
-        return videosCollection.find() // Returns a promise so we can await the result in the test.
+        videosCollection.find()
             .toArray()
             .then(videos => {
-                res.json({
+                res.json({ 
                     videos: videos
                 });
             })
@@ -63,8 +63,8 @@ function startHttpServer(dbConn) {
             microservice.close = () => { // Create a function that can be used to close our server and database.
                 return new Promise(resolve => {
                     server.close(() => { // Close the Express server.
-            resolve();
-        });
+                        resolve();
+                    });
                 })
                 .then(() => {
                     return dbConn.close(); // Close the database.

@@ -1,5 +1,5 @@
 {
-  "name": "example-1",
+  "name": "example-3",
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
@@ -7,10 +7,11 @@
     "test:watch": "jest --watchAll"
   },
   "devDependencies": {
+    "axios": "^0.19.2",
     "jest": "^26.2.2"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "mongodb": "^3.6.0"
+    "mongodb": "^3.7.3"
   }
 }
